@@ -1,5 +1,5 @@
 # ansible-jenkins
-Liatrio's Jenkins Playboo
+Liatrio's Jenkins Playbook
 
 ## Hackathon Pipeline
  - [hackathon-pipeline-terraform](https://github.com/liatrio/hackathon-pipeline-terraform)
