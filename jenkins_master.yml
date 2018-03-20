@@ -1,0 +1,9 @@
+- hosts: jenkins_master
+  sudo: yes
+  vars:
+    jenkins_hostname: jenkins.fastfeedback.rocks
+  roles:
+    - role: java_internal
+    - role: geerlingguy.jenkins
+      become: true
+  
