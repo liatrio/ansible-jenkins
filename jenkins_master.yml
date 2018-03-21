@@ -6,4 +6,5 @@
     - role: java_internal
     - role: geerlingguy.jenkins
       become: true
+      jenkins_plugins: ["credentials:2.1.14","credentials-binding:1.12"]
   
