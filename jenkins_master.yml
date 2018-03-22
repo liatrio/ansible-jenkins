@@ -1,9 +1,41 @@
 - hosts: jenkins_master
   sudo: yes
   vars:
-    jenkins_hostname: jenkins.fastfeedback.rocks
+    jenkins_hostname: 54.219.170.56
   roles:
     - role: java_internal
+    - role: jdauphant.ssl-certs
+      ssl_certs_path_owner: "ec2-user"
+      ssl_certs_path_group: "ec2-user"
+      ssl_certs_common_name: "jenkins.fastfeedback.rocks"
+      ssl_certs_generate_dh_param: true
+    - role: jdauphant.nginx
+      nginx_configs:
+        upstream:
+          - upstream jenkins { server 127.0.0.1:8080 fail_timeout=0; }
+        ssl:
+          - ssl_certificate_key {{ssl_certs_privkey_path}}
+          - ssl_certificate     {{ssl_certs_cert_path}}
+          - ssl_dhparam         {{ssl_certs_dhparam_path}}
+      nginx_sites:
+        jenkins:
+        - listen 443 ssl
+        - server_name {{jenkins_hostname}}
+        - set $myhost {{jenkins_hostname}} 
+        - |
+          location \ {
+            proxy_set_header        Host $host:$server_port;
+            proxy_set_header        X-Real-IP $remote_addr;
+            proxy_set_header        X-Forwarded-For $proxy_add_x_forwarded_for;
+            proxy_set_header        X-Forwarded-Proto $scheme;
+            proxy_redirect http:// https://;
+            proxy_pass              http://jenkins;
+            # Required for new HTTP-based CLI
+            proxy_http_version 1.1;
+            proxy_request_buffering off;
+            proxy_buffering off; # Required for HTTP-based CLI to work over SSL
+            add_header 'X-SSH-Endpoint' 'jenkins.domain.tld:50022' always;
+          }
     - role: geerlingguy.jenkins
       become: true
       jenkins_plugins_state: present
@@ -99,3 +131,4 @@
         - pipeline-rest-api
         - branch-api
         - variant
+
