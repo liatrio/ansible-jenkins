@@ -1,41 +1,45 @@
 - hosts: jenkins_master
   sudo: yes
   vars:
-    jenkins_hostname: 54.219.170.56
+    jenkins_hostname: jenkins.fastfeedback.rocks
+    certbot_auto_renew_user: ec2-user
+    certbot_auto_renew_minute: 20
+    certbot_auto_renew_hour: 5
   roles:
     - role: java_internal
-    - role: jdauphant.ssl-certs
-      ssl_certs_path_owner: "ec2-user"
-      ssl_certs_path_group: "ec2-user"
-      ssl_certs_common_name: "jenkins.fastfeedback.rocks"
-      ssl_certs_generate_dh_param: true
-    - role: jdauphant.nginx
-      nginx_configs:
-        upstream:
-          - upstream jenkins { server 127.0.0.1:8080 fail_timeout=0; }
-        ssl:
-          - ssl_certificate_key {{ssl_certs_privkey_path}}
-          - ssl_certificate     {{ssl_certs_cert_path}}
-          - ssl_dhparam         {{ssl_certs_dhparam_path}}
-      nginx_sites:
-        jenkins:
-        - listen 443 ssl
-        - server_name {{jenkins_hostname}}
-        - set $myhost {{jenkins_hostname}} 
+    - role: geerlingguy.git
+    - role: geerlingguy.certbot
+      certbot_install_from_source: yes
+      certbot_repo: https://github.com/certbot/certbot.git
+      certbot_version: master
+      certbot_keep_updated: yes
+    - role: geerlingguy.nginx
+      nginx_upstreams:
         - |
-          location \ {
-            proxy_set_header        Host $host:$server_port;
-            proxy_set_header        X-Real-IP $remote_addr;
-            proxy_set_header        X-Forwarded-For $proxy_add_x_forwarded_for;
-            proxy_set_header        X-Forwarded-Proto $scheme;
-            proxy_redirect http:// https://;
-            proxy_pass              http://jenkins;
-            # Required for new HTTP-based CLI
-            proxy_http_version 1.1;
-            proxy_request_buffering off;
-            proxy_buffering off; # Required for HTTP-based CLI to work over SSL
-            add_header 'X-SSH-Endpoint' 'jenkins.domain.tld:50022' always;
+          server jenkins {
+            server 127.0.0.1:8080 fail_timeout=0;
           }
+      nginx_vhosts:
+        - listen: "443 ssl http2"
+          server_name: "jenkins.fastfeedback.rocks"
+          server_name_redirect: "jenkins.fastfeedback.rocks"
+          extra_parameters: |
+            location / {
+              proxy_set_header        Host $host:$server_port;
+              proxy_set_header        X-Real-IP $remote_addr;
+              proxy_set_header        X-Forwarded-For $proxy_add_x_forwarded_for;
+              proxy_set_header        X-Forwarded-Proto $scheme;
+              proxy_redirect http:// https://;
+              proxy_pass              http://jenkins;
+              # Required for new HTTP-based CLI
+              proxy_http_version 1.1;
+              proxy_request_buffering off;
+              proxy_buffering off; # Required for HTTP-based CLI to work over SSL
+
+              add_header 'X-SSH-Endpoint' 'jenkins.domain.tld:50022' always;
+            }
+            ssl_certificate /etc/nginx/ssl/server.crt;
+            ssl_certificate_key /etc/nginx/ssl/server.key;
     - role: geerlingguy.jenkins
       become: true
       jenkins_plugins_state: present
