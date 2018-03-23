@@ -4,6 +4,30 @@
     jenkins_hostname: jenkins.fastfeedback.rocks
   roles:
     - role: java_internal
+    - role: geerlingguy.git
+    - role: geerlingguy.nginx
+      ansible_distribution_major_version: 6
+      #nginx_upstreams: 
+      #  - name: jenkins
+      #    servers: {
+      #      "127.0.0.1:8080"
+      #    }
+      nginx_vhosts:
+        - listen: "80"
+          server_name: "jenkins.fastfeedback.rocks"
+          extra_parameters: |
+            location / {
+              proxy_set_header        Host $host:$server_port;
+              proxy_set_header        X-Real-IP $remote_addr;
+              proxy_set_header        X-Forwarded-For $proxy_add_x_forwarded_for;
+              proxy_set_header        X-Forwarded-Proto $scheme;
+              proxy_pass              http://127.0.0.1:8080;
+              # Required for new HTTP-based CLI
+              proxy_http_version 1.1;
+              proxy_request_buffering off;
+              proxy_buffering off; # Required for HTTP-based CLI to work over SSL
+              add_header 'X-SSH-Endpoint' 'jenkins.fastfeedback.rocks:50022' always;
+            }
     - role: geerlingguy.jenkins
       become: true
       jenkins_plugins_state: present
