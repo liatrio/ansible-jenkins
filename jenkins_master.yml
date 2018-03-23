@@ -2,44 +2,32 @@
   sudo: yes
   vars:
     jenkins_hostname: jenkins.fastfeedback.rocks
-    certbot_auto_renew_user: ec2-user
-    certbot_auto_renew_minute: 20
-    certbot_auto_renew_hour: 5
   roles:
     - role: java_internal
     - role: geerlingguy.git
-    - role: geerlingguy.certbot
-      certbot_install_from_source: yes
-      certbot_repo: https://github.com/certbot/certbot.git
-      certbot_version: master
-      certbot_keep_updated: yes
     - role: geerlingguy.nginx
-      nginx_upstreams:
-        - |
-          server jenkins {
-            server 127.0.0.1:8080 fail_timeout=0;
-          }
+      ansible_distribution_major_version: 6
+      #nginx_upstreams: 
+      #  - name: jenkins
+      #    servers: {
+      #      "127.0.0.1:8080"
+      #    }
       nginx_vhosts:
-        - listen: "443 ssl http2"
+        - listen: "80"
           server_name: "jenkins.fastfeedback.rocks"
-          server_name_redirect: "jenkins.fastfeedback.rocks"
           extra_parameters: |
             location / {
               proxy_set_header        Host $host:$server_port;
               proxy_set_header        X-Real-IP $remote_addr;
               proxy_set_header        X-Forwarded-For $proxy_add_x_forwarded_for;
               proxy_set_header        X-Forwarded-Proto $scheme;
-              proxy_redirect http:// https://;
-              proxy_pass              http://jenkins;
+              proxy_pass              http://127.0.0.1:8080;
               # Required for new HTTP-based CLI
               proxy_http_version 1.1;
               proxy_request_buffering off;
               proxy_buffering off; # Required for HTTP-based CLI to work over SSL
-
-              add_header 'X-SSH-Endpoint' 'jenkins.domain.tld:50022' always;
+              add_header 'X-SSH-Endpoint' 'jenkins.fastfeedback.rocks:50022' always;
             }
-            ssl_certificate /etc/nginx/ssl/server.crt;
-            ssl_certificate_key /etc/nginx/ssl/server.key;
     - role: geerlingguy.jenkins
       become: true
       jenkins_plugins_state: present
@@ -135,4 +123,5 @@
         - pipeline-rest-api
         - branch-api
         - variant
+
 
