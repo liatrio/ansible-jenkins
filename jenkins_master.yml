@@ -1,7 +1,7 @@
 - hosts: jenkins_master
   sudo: yes
   vars:
-    jenkins_hostname: 13.57.183.164
+    jenkins_hostname: jenkins.fastfeedback.rocks
   roles:
     - role: java_internal
     - role: geerlingguy.git
