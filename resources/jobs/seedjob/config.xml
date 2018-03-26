@@ -1,0 +1,52 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<project>
+  <actions/>
+  <description></description>
+  <keepDependencies>false</keepDependencies>
+  <properties/>
+  <canRoam>true</canRoam>
+  <disabled>false</disabled>
+  <blockBuildWhenDownstreamBuilding>false</blockBuildWhenDownstreamBuilding>
+  <blockBuildWhenUpstreamBuilding>false</blockBuildWhenUpstreamBuilding>
+  <triggers/>
+  <concurrentBuild>false</concurrentBuild>
+  <builders>
+    <javaposse.jobdsl.plugin.ExecuteDslScripts plugin="job-dsl@1.63">
+      <targets>**/*.groovy</targets>
+      <scriptText>
+
+        def repos = [
+        [ url: &quot;https://github.com/liatrio/credit-card-demo.git&quot;, prod: &quot;Jenkinsfile&quot; , default: &quot;Jenkinsfile&quot;  ],
+        [ url: &quot;https://github.com/liatrio/apifest-demo.git&quot;, prod: &quot;Jenkinsfile&quot; , default: &quot;Jenkinsfile&quot;  ],
+        ]
+
+repos.each { repo-&gt;
+  def jobName = repo.url.split(&quot;/&quot;)[4].replaceAll(&quot;.git&quot;, &quot;&quot;)
+  def branch = &quot;master&quot;
+  pipelineJob(&quot;${jobName}&quot;){
+    definition {
+      cpsScm {
+        scm {
+          git(repo.url, branch, null)
+        }
+        scriptPath(&apos;Jenkinsfile&apos;)
+      }
+    }
+  }
+}</scriptText>
+      <usingScriptText>true</usingScriptText>
+      <sandbox>false</sandbox>
+      <ignoreExisting>false</ignoreExisting>
+      <ignoreMissingFiles>false</ignoreMissingFiles>
+      <failOnMissingPlugin>false</failOnMissingPlugin>
+      <unstableOnDeprecation>false</unstableOnDeprecation>
+      <removedJobAction>IGNORE</removedJobAction>
+      <removedViewAction>IGNORE</removedViewAction>
+      <removedConfigFilesAction>IGNORE</removedConfigFilesAction>
+      <lookupStrategy>JENKINS_ROOT</lookupStrategy>
+    </javaposse.jobdsl.plugin.ExecuteDslScripts>
+  </builders>
+  <publishers/>
+  <buildWrappers/>
+</project>
+

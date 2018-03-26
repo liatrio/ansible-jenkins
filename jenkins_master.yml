@@ -1,7 +1,7 @@
 - hosts: jenkins_master
   sudo: yes
   vars:
-    jenkins_hostname: jenkins.fastfeedback.rocks
+    jenkins_hostname: 54.153.119.69
   roles:
     - role: java_internal
     - role: geerlingguy.git
@@ -123,28 +123,17 @@
         - pipeline-rest-api
         - branch-api
         - variant
+        - job-dsl
   tasks:
   - file:
-      path: /var/lib/jenkins/jobs/credit-card-demo/
-      state: directory
-      owner: jenkins
-      group: jenkins
-      mode: u+rwx,g+rwx
-  - file:
-      path: /var/lib/jenkins/jobs/apifest-demo/
+      path: /var/lib/jenkins/jobs/seedjob/
       state: directory
       owner: jenkins
       group: jenkins
       mode: u+rwx,g+rwx
   - copy:
-      src: resources/jobs/credit-card-demo/config.xml
-      dest: /var/lib/jenkins/jobs/credit-card-demo/config.xml
-      owner: jenkins
-      group: jenkins
-      mode: u+rwx,g+rwx
-  - copy:
-      src: resources/jobs/apifest-demo/config.xml
-      dest: /var/lib/jenkins/jobs/apifest-demo/config.xml
+      src: resources/jobs/seedjob/config.xml
+      dest: /var/lib/jenkins/jobs/seedjob/config.xml
       owner: jenkins
       group: jenkins
       mode: u+rwx,g+rwx
