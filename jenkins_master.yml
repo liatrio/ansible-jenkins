@@ -3,6 +3,8 @@
   vars:
     jenkins_hostname: jenkins.fastfeedback.rocks
   roles:
+    - role: common
+      become: yes
     - role: java_internal
     - role: geerlingguy.jenkins
       become: true
