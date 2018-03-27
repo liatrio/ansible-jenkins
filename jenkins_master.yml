@@ -123,3 +123,17 @@
         - pipeline-rest-api
         - branch-api
         - variant
+        - job-dsl
+  tasks:
+  - file:
+      path: /var/lib/jenkins/jobs/seedjob/
+      state: directory
+      owner: jenkins
+      group: jenkins
+      mode: u+rwx,g+rwx
+  - copy:
+      src: resources/jobs/seedjob/config.xml
+      dest: /var/lib/jenkins/jobs/seedjob/config.xml
+      owner: jenkins
+      group: jenkins
+      mode: u+rwx,g+rwx
