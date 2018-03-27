@@ -22,7 +22,6 @@
 
 repos.each { repo-&gt;
   def jobName = repo.url.split(&quot;/&quot;)[4].replaceAll(&quot;.git&quot;, &quot;&quot;)
-  def branch = &quot;master&quot;
   multibranchPipelineJob(&quot;${jobName}&quot;){
     branchSources {
       git {
