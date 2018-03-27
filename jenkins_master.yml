@@ -3,6 +3,8 @@
   vars:
     jenkins_hostname: jenkins.fastfeedback.rocks
   roles:
+    - role: liatrio.mount_persist_data
+      become: yes
     - role: java_internal
     - role: geerlingguy.git
     - role: geerlingguy.nginx
