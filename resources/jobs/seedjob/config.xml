@@ -23,13 +23,10 @@
 repos.each { repo-&gt;
   def jobName = repo.url.split(&quot;/&quot;)[4].replaceAll(&quot;.git&quot;, &quot;&quot;)
   def branch = &quot;master&quot;
-  pipelineJob(&quot;${jobName}&quot;){
-    definition {
-      cpsScm {
-        scm {
-          git(repo.url, branch, null)
-        }
-        scriptPath(&apos;Jenkinsfile&apos;)
+  multibranchPipelineJob(&quot;${jobName}&quot;){
+    branchSources {
+      git {
+        remote(&quot;${repo.url}&quot;)
       }
     }
   }
