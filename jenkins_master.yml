@@ -5,6 +5,8 @@
   roles:
     - role: liatrio.mount_persist_data
       become: yes
+    - role: prereqs
+      become: yes
     - role: java_internal
     - role: geerlingguy.git
     - role: geerlingguy.nginx
