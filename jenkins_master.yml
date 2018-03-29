@@ -128,16 +128,83 @@
         - branch-api
         - variant
         - job-dsl
+        -  ssh-slaves
   tasks:
   - file:
-      path: /var/lib/jenkins/jobs/seedjob/
+      path: /data/jenkins/jobs/seedjob/
+      state: directory
+      owner: jenkins
+      group: jenkins
+      mode: u+rwx,g+rwx
+  - file:
+      path: /data/jenkins/nodes/slave-1
+      state: directory
+      owner: jenkins
+      group: jenkins
+      mode: u+rwx,g+rwx
+  - file:
+      path: /data/jenkins/nodes/slave-2
+      state: directory
+      owner: jenkins
+      group: jenkins
+      mode: u+rwx,g+rwx
+  - file:
+      path: /data/jenkins/nodes/slave-3
+      state: directory
+      owner: jenkins
+      group: jenkins
+      mode: u+rwx,g+rwx
+  - file:
+      path: /data/jenkins/nodes/slave-4
+      state: directory
+      owner: jenkins
+      group: jenkins
+      mode: u+rwx,g+rwx
+  - file:
+      path: /data/jenkins/nodes/slave-5
       state: directory
       owner: jenkins
       group: jenkins
       mode: u+rwx,g+rwx
   - copy:
-      src: resources/jobs/seedjob/config.xml
-      dest: /var/lib/jenkins/jobs/seedjob/config.xml
+      src: resources/config.xml
+      dest: /data/jenkins/config.xml
       owner: jenkins
       group: jenkins
       mode: u+rwx,g+rwx
+  - copy:
+      src: resources/jobs/seedjob/config.xml
+      dest: /data/jenkins/jobs/seedjob/config.xml
+      owner: jenkins
+      group: jenkins
+      mode: u+rwx,g+rwx
+  - copy:
+      src: resources/nodes/slave-1.xml
+      dest: /data/jenkins/nodes/slave-1/config.xml
+      owner: jenkins
+      group: jenkins
+      mode: u+rw,g+rw
+  - copy:
+      src: resources/nodes/slave-2.xml
+      dest: /data/jenkins/nodes/slave-2/config.xml
+      owner: jenkins
+      group: jenkins
+      mode: u+rw,g+rw
+  - copy:
+      src: resources/nodes/slave-3.xml
+      dest: /data/jenkins/nodes/slave-3/config.xml
+      owner: jenkins
+      group: jenkins
+      mode: u+rw,g+rw
+  - copy:
+      src: resources/nodes/slave-4.xml
+      dest: /data/jenkins/nodes/slave-4/config.xml
+      owner: jenkins
+      group: jenkins
+      mode: u+rw,g+rw
+  - copy:
+      src: resources/nodes/slave-5.xml
+      dest: /data/jenkins/nodes/slave-5/config.xml
+      owner: jenkins
+      group: jenkins
+      mode: u+rw,g+rw
