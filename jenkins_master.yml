@@ -35,6 +35,7 @@
     - role: geerlingguy.jenkins
       become: true
       jenkins_plugins_state: present
+      jenkins_plugin_timeout: 60
       jenkins_plugins: 
         - blueocean-personalization
         - pipeline-build-step
